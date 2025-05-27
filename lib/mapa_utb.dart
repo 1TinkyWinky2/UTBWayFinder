@@ -11,6 +11,8 @@ class _MapaUTBState extends State<MapaUTB> {
 
   final LatLng _centroUTB = const LatLng(10.370313895625339, -75.46561924377788);
 
+  MapType _currentMapType = MapType.normal; // Vista inicial
+
   Set<Marker> _crearMarcadores(BuildContext context) {
     return {
       Marker(
@@ -73,41 +75,59 @@ class _MapaUTBState extends State<MapaUTB> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mapa Satelital UTB"),
+        title: Text("Mapa UTB"),
         backgroundColor: Colors.blueAccent,
       ),
-      body: GoogleMap(
-        mapType: MapType.satellite,
-        initialCameraPosition: CameraPosition(
-          target: _centroUTB,
-          zoom: 17.0,
-        ),
-        onMapCreated: (GoogleMapController controller) {
-          mapController = controller;
-        },
-        minMaxZoomPreference: MinMaxZoomPreference(18.0, 21.0),
-        cameraTargetBounds: CameraTargetBounds(
-          LatLngBounds(
-            southwest: LatLng(10.3685, -75.4670),
-            northeast: LatLng(10.3720, -75.4640),
+      body: Stack(
+        children: [
+          GoogleMap(
+            mapType: _currentMapType,
+            initialCameraPosition: CameraPosition(
+              target: _centroUTB,
+              zoom: 17.0,
+            ),
+            onMapCreated: (GoogleMapController controller) {
+              mapController = controller;
+            },
+            minMaxZoomPreference: MinMaxZoomPreference(18.0, 21.0),
+            cameraTargetBounds: CameraTargetBounds(
+              LatLngBounds(
+                southwest: LatLng(10.3685, -75.4670),
+                northeast: LatLng(10.3720, -75.4640),
+              ),
+            ),
+            markers: _crearMarcadores(context),
+            onCameraMove: (CameraPosition position) {
+              final bounds = LatLngBounds(
+                southwest: LatLng(10.3685, -75.4670),
+                northeast: LatLng(10.3720, -75.4640),
+              );
+
+              if (!bounds.contains(position.target)) {
+                mapController.animateCamera(
+                  CameraUpdate.newLatLng(_centroUTB),
+                );
+              }
+            },
           ),
-        ),
-        markers: _crearMarcadores(context),
-
-        // ⛔ Detecta si el usuario se va fuera de los límites
-        onCameraMove: (CameraPosition position) {
-          final bounds = LatLngBounds(
-            southwest: LatLng(10.3685, -75.4670),
-            northeast: LatLng(10.3720, -75.4640),
-          );
-
-          if (!bounds.contains(position.target)) {
-            // 🌀 Regresa al centro si se sale del área
-            mapController.animateCamera(
-              CameraUpdate.newLatLng(_centroUTB),
-            );
-          }
-        },
+          Positioned(
+            top: 100,
+            right: 10,
+            child: FloatingActionButton(
+              heroTag: 'mapTypeToggle',
+              onPressed: () {
+                setState(() {
+                  _currentMapType = _currentMapType == MapType.normal
+                      ? MapType.satellite
+                      : MapType.normal;
+                });
+              },
+              child: Icon(Icons.map),
+              tooltip: 'Cambiar tipo de mapa',
+              backgroundColor: Colors.blueAccent,
+            ),
+          ),
+        ],
       ),
     );
   }

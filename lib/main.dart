@@ -19,74 +19,76 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Imagen de fondo
-          Positioned.fill(
-            child: Image.asset(
-              "assets/images/fondo2.png",
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Capa azul translúcida
-          Positioned.fill(
-            child: Container(
-              color: Colors.blue.withOpacity(0.2), // Ajusta la opacidad aquí
-            ),
-          ),
-          // Rectángulo superior con el logotipo
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              height: 80, // Ajusta la altura si es necesario
-              color: Colors.lightBlue.withOpacity(0.8), // Fondo semitransparente
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Image.asset(
-                  "assets/images/logo.png",
-                  height: 60, // Ajusta el tamaño del logo
-                ),
+      backgroundColor: Color(0xFFFFF3E0), // Fondo beige
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+
+            // Logo centrado arriba
+            Center(
+              child: Image.asset(
+                "assets/images/logo.png",
+                height: 300,
               ),
             ),
-          ),
-          // Contenido sobre la imagen y el filtro azul
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Bienvenido a",
-                  style: TextStyle(
-                    fontSize: 64,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white70,
-                  ),
-                ),
-                Text(
-                  "UTBWayFinder",
-                  style: TextStyle(
-                    fontSize: 64,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MapaUTB()),
-                    );
-                  },
-                  child: Text("Ver WayFinder"),
-                ),
-              ],
+
+            Spacer(),
+
+            // Textos principales
+            Text(
+              "Bienvenido a",
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown[700],
+              ),
             ),
-          ),
-        ],
+            Text(
+              "UTBWayFinder",
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown[900],
+              ),
+            ),
+
+            SizedBox(height: 40),
+
+            // Botón con animación
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 500),
+                    pageBuilder: (context, animation, secondaryAnimation) => MapaUTB(),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return ScaleTransition(
+                        scale: CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeInOut,
+                        ),
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown[400],
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                textStyle: TextStyle(fontSize: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text("Ver WayFinder"),
+            ),
+
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
